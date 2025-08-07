@@ -25,16 +25,19 @@ struct MyParams{T, M}
     Σ::M
 end
 
-const autodiff = AutoForwardDiff(; chunksize = 1)
-const alg = TrustRegion(; autodiff, linsolve = LS.CholeskyFactorization())
-const prob = NonlinearLeastSquaresProblem{false}(
-    f,
-    rand(2),
-    MyParams(rand(), hermitianpart(rand(2, 2) + 2I))
-)
-const cache = init(prob, alg)
+const cacheref = OncePerProcess() do
+    autodiff = AutoForwardDiff(; chunksize = 1)
+    alg = TrustRegion(; autodiff, linsolve = LS.CholeskyFactorization())
+    prob = NonlinearLeastSquaresProblem{false}(
+        f,
+        rand(2),
+        MyParams(rand(), hermitianpart(rand(2, 2) + 2I)),
+    )
+    cache = init(prob, alg)
+end
 
 function minimize(x)
+    cache = cacheref()
     ps = MyParams(x, hermitianpart(rand(2, 2) + 2I))
     reinit!(cache, rand(2); p = ps)
     solve!(cache)
