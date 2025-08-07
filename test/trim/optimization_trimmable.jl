@@ -6,6 +6,8 @@ using ForwardDiff
 using LinearAlgebra
 using StaticArrays
 using LinearSolve
+using SciMLBase
+import SciMLBase: ReturnCode
 import SciMLBase
 const LS = LinearSolve
 
@@ -34,6 +36,10 @@ const cacheref = OncePerProcess() do
         MyParams(rand(), hermitianpart(rand(2, 2) + 2I)),
     )
     cache = init(prob, alg)
+    println(Core.stdout, SciMLBase.ReturnCode.T)
+    reinit!(cache, rand(2); p = ps)
+    solve!(cache)
+    cache
 end
 
 function minimize(x)
