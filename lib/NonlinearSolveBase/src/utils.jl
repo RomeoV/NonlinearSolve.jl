@@ -154,7 +154,7 @@ is_default_value(::Any, ::Any, ::Any) = false
 maybe_symmetric(x) = Symmetric(x)
 maybe_symmetric(x::Number) = x
 ## LinearSolve with `nothing` doesn't dispatch correctly here
-maybe_symmetric(x::StaticArray) = x # XXX: Can we remove this?
+maybe_symmetric(x::StaticArray) = (x+x')/2  # deal with numerical inaccuracies without changing type (e.g. don't use Symmetric)
 maybe_symmetric(x::AbstractSciMLOperator) = x
 
 # Define special concatenation for certain Array combinations
