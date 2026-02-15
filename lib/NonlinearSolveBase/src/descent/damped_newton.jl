@@ -130,7 +130,7 @@ function InternalAPI.init(
         D = damping_fn_cache(nothing)
 
         @bb J_cache = similar(JᵀJ)
-        @bb @. J_cache = 0
+        @bb @. J_cache *= false
         J_damped = dampen_jacobian!!(J_cache, JᵀJ, D)
         A, b = Utils.maybe_symmetric(J_damped), Utils.safe_vec(Jᵀfu)
         rhs_cache = nothing
